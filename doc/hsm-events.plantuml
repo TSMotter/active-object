@@ -1,0 +1,81 @@
+@startuml hsm-events
+/' hide empty description '/
+title Hierarchical State Machine Events (hsm-events)
+
+[*] --> ActorFooSuperState
+[*] --> ActorBarSuperState
+
+state ActorFooSuperState #orange {
+  ActorFooSuperState : entry /
+  ActorFooSuperState : exit /
+
+  state StateA {
+    StateA : entry / EventPost(Event_Blue{11}) [1]
+    StateA : exit /
+
+
+    state StateC {
+      StateC : entry /
+      StateC : exit /
+    }
+
+    state StateD {
+      StateD : entry /
+      StateD : exit /
+
+      state StateF {
+        StateF : entry /
+        StateF : exit /
+
+        state StateG {
+          StateG : entry / EventPost(Event_Blue{22}) [5]
+          StateG : exit /
+        }
+      }
+    }
+  }
+
+  state StateB {
+    StateB : entry /
+    StateB : exit /
+
+    state StateE {
+      StateE : entry /  EventPost(Event_Blue{33}) [9]
+      StateE : exit /
+    }
+  }
+
+  [*] --> StateA
+  StateA -[#green,bold]-> StateG : [4]\nEvent_Green{1, 2, 3}
+  StateG -[#green,bold]-> StateE : [8]\nEvent_Green{4, 5, 6}
+  StateE -[#green,bold]-> StateA : [12]\nEvent_Green{7, 8, 9}
+}
+
+
+state ActorBarSuperState #pink {
+  ActorBarSuperState : entry /
+  ActorBarSuperState : exit /
+
+  state State1 {
+    State1 : entry /
+    State1 : exit /
+
+    state State3 {
+      State3 : entry / EventPost(Event_Green{4, 5, 6}) [7]
+      State3 : exit / EventPost(Event_Green{7, 8, 9}) [11]
+    }
+  }
+
+  state State2 {
+    State2 : entry / EventPost(Event_Green{1, 2, 3}) [3]
+    State2 : exit /
+
+  }
+
+  [*] --> State1
+  State1 -[#blue,bold]-> State2 : Event_Blue{11} [2]
+  State2 -[#blue,bold]-> State3 : Event_Blue{22} [6]
+  State3 -[#blue,bold]-> State1 : Event_Blue{33} [10]
+}
+
+@enduml

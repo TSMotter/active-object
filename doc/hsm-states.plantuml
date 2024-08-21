@@ -1,0 +1,17 @@
+@startmindmap hsm-states
+title Hierarchical State Machine States (hsm-states)
+
+*[#Orange] ActorFooSuperState
+** StateA
+*** StateC
+*** StateD
+**** StateF
+***** StateG
+** StateB
+*** StateE
+
+*[#Pink] ActorBarSuperState
+** State1
+*** State3
+** State2
+@endmindmap
