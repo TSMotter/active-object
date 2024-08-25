@@ -13,8 +13,6 @@
 
 #define LOG_TSQ(lvl) (LOG("ThreadSafeQueue.hpp", lvl))
 
-namespace tsq
-{
 template <typename T>
 class IThreadSafeQueue
 {
@@ -123,7 +121,5 @@ class SimplestThreadSafeQueue : public IThreadSafeQueue<T>
     std::condition_variable m_cv;
     std::mutex              m_mutex;
 };
-
-}  // namespace tsq
 
 #endif

@@ -22,7 +22,7 @@ constexpr const unsigned int LEVEL_WARNING = 3;
 constexpr const unsigned int LEVEL_ERROR   = 4;
 
 #if not defined(SYSTEM_LOG_LEVEL)
-#define SYSTEM_LOG_LEVEL LEVEL_DEBUG
+#define SYSTEM_LOG_LEVEL LEVEL_INFO
 #endif
 
 #define LOG(mod, level) level >= SYSTEM_LOG_LEVEL ? std::cout << "[" << mod << "] " : nullStream

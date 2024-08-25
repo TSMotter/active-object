@@ -8,9 +8,6 @@
 
 #include <boost/signals2.hpp>
 
-namespace evt
-{
-
 class IEvent
 {
    public:
@@ -29,7 +26,5 @@ class IEvent
 using IEvent_ptr      = std::shared_ptr<IEvent>;
 using SignatureIEvent = std::function<void(IEvent_ptr)>;
 using SignalIEvent    = boost::signals2::signal<void(IEvent_ptr)>;
-
-}  // namespace evt
 
 #endif

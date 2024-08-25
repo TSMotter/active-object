@@ -1,10 +1,9 @@
 #ifndef __STATEMANAGER_H_
 #define __STATEMANAGER_H_
 
-#include "tree.h"
+#include "tree/tree.h"
+#include "IEvent.hpp"
 
-namespace st_mgr
-{
 template <typename T>
 class StateManager
 {
@@ -95,6 +94,5 @@ class StateManager
     tree<T>                    m_tree;
     typename tree<T>::iterator m_current_state;
 };
-}  // namespace st_mgr
 
 #endif

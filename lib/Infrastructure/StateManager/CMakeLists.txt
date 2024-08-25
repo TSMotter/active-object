@@ -6,3 +6,8 @@ target_sources(StateManager INTERFACE StateManager.hpp)
 target_include_directories(StateManager INTERFACE ${CMAKE_SOURCE_DIR}/external)
 # Link library to a binary target
 target_link_libraries(StateManager INTERFACE tree)
+
+# Make the directory known
+target_include_directories(StateManager INTERFACE ${CMAKE_SOURCE_DIR}/lib/Infrastructure/IEvent)
+# Link library to a binary target
+target_link_libraries(StateManager INTERFACE IEvent)
