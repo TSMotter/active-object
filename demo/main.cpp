@@ -15,12 +15,7 @@
 #include "StateManager/StateManager.hpp"
 
 #define LOG_MAIN (LOG("main.cpp", LEVEL_INFO))
-
-void sigint_handler(int sig)
-{
-    printf("[sigint_handler] Will exit cleanly...\n");
-    exit(0);
-}
+#define DELAY 200
 
 using connection = boost::signals2::connection;
 
@@ -36,6 +31,9 @@ class EventGreen : public IEvent
 {
    public:
     std::vector<int> data;
+};
+class Shutdown : public IEvent
+{
 };
 
 }  // namespace Evts
@@ -90,13 +88,13 @@ class ActorFooSuperState
     virtual void unhandled_event(IEvent_ptr event)
     {
         (void) event;
-        LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     }
 
     virtual void process_event(IEvent_ptr event)
     {
         (void) event;
-        LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     }
 
     virtual StateValue type() const { return m_state_enum; }
@@ -252,7 +250,7 @@ class ActorFoo
     }
 
     template <class T>
-    connection connect_callback_for_signal_emited_from_A(T&& handler)
+    connection connect_callbacks(T&& handler)
     {
         return m_signal.connect(handler);
     }
@@ -288,17 +286,17 @@ class ActorFoo
 /* clang-format off */
 void StateA::on_entry()
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::shared_ptr<Evts::EventBlue> event = std::make_shared<Evts::EventBlue>();
     event->timeout                       = 11;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     m_actor->m_signal(event);
 }
 void StateA::process_event(IEvent_ptr event)
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
    std::size_t event_type = event->getTypeHash();
 
@@ -309,7 +307,7 @@ void StateA::process_event(IEvent_ptr event)
         if (event_green)
         {
             std::ostringstream logStream;
-            logStream << "This is the event data: " << std::endl;
+            logStream << "This is the event data: ";
             for (auto k : event_green->data)
             {
                 logStream << k << " ";
@@ -322,43 +320,47 @@ void StateA::process_event(IEvent_ptr event)
         }
         m_actor->m_next_state = m_actor->m_states[StateValue::STATE_G];
     }
+    else
+    {
+
+    }
 }
-void StateA::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
-void StateC::on_entry() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
-void StateC::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void StateA::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
+void StateC::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
+void StateC::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
 void StateC::process_event(IEvent_ptr event)
 {
     (void) event;
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
 }
-void StateD::on_entry() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
-void StateD::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void StateD::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
+void StateD::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
 void StateD::process_event(IEvent_ptr event)
 {
     (void) event;
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
 }
-void StateF::on_entry() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
-void StateF::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void StateF::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
+void StateF::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
 void StateF::process_event(IEvent_ptr event)
 {
     (void) event;
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
 }
 void StateG::on_entry()
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::shared_ptr<Evts::EventBlue> event = std::make_shared<Evts::EventBlue>();
     event->timeout                       = 22;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     m_actor->m_signal(event);
 }
-void StateG::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void StateG::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
 void StateG::process_event(IEvent_ptr event)
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
    std::size_t event_type = event->getTypeHash();
 
@@ -369,7 +371,7 @@ void StateG::process_event(IEvent_ptr event)
         if (event_green)
         {
             std::ostringstream logStream;
-            logStream << "This is the event data: " << std::endl;
+            logStream << "This is the event data: ";
             for (auto k : event_green->data)
             {
                 logStream << k << " ";
@@ -383,27 +385,30 @@ void StateG::process_event(IEvent_ptr event)
         m_actor->m_next_state = m_actor->m_states[StateValue::STATE_E];
     }
 }
-void StateB::on_entry() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
-void StateB::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void StateB::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
+void StateB::on_exit()
+{
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+}
 void StateB::process_event(IEvent_ptr event)
 {
     (void) event;
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
 }
 void StateE::on_entry()
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::shared_ptr<Evts::EventBlue> event = std::make_shared<Evts::EventBlue>();
     event->timeout                       = 33;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     m_actor->m_signal(event);
 }
-void StateE::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void StateE::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
 void StateE::process_event(IEvent_ptr event)
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
    std::size_t event_type = event->getTypeHash();
 
@@ -414,7 +419,7 @@ void StateE::process_event(IEvent_ptr event)
         if (event_green)
         {
             std::ostringstream logStream;
-            logStream << "This is the event data: " << std::endl;
+            logStream << "This is the event data: ";
             for (auto k : event_green->data)
             {
                 logStream << k << " ";
@@ -476,13 +481,13 @@ class ActorBarSuperState
     virtual void unhandled_event(IEvent_ptr event)
     {
         (void) event;
-        LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     }
 
     virtual void process_event(IEvent_ptr event)
     {
         (void) event;
-        LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     }
 
     virtual StateValue type() const { return m_state_enum; }
@@ -583,7 +588,7 @@ class ActorBar
     }
 
     template <class T>
-    connection connect_callback_for_signal_emited_from_B(T&& handler)
+    connection connect_callbacks(T&& handler)
     {
         return m_signal.connect(handler);
     }
@@ -618,12 +623,12 @@ class ActorBar
 };
 
 /* clang-format off */
-void State1::on_entry() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
-void State1::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void State1::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
+void State1::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
 void State1::process_event(IEvent_ptr event)
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::size_t event_type = event->getTypeHash();
 
@@ -644,20 +649,20 @@ void State1::process_event(IEvent_ptr event)
 }
 void State2::on_entry()
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::shared_ptr<Evts::EventGreen> event = std::make_shared<Evts::EventGreen>();
     event->data.emplace_back(1);
     event->data.emplace_back(2);
     event->data.emplace_back(3);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     m_actor->m_signal(event);
 }
-void State2::on_exit() { LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl; }
+void State2::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
 void State2::process_event(IEvent_ptr event)
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::size_t event_type = event->getTypeHash();
 
@@ -678,30 +683,30 @@ void State2::process_event(IEvent_ptr event)
 }
 void State3::on_entry()
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::shared_ptr<Evts::EventGreen> event = std::make_shared<Evts::EventGreen>();
     event->data.emplace_back(4);
     event->data.emplace_back(5);
     event->data.emplace_back(6);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     m_actor->m_signal(event);
 }
 void State3::on_exit()
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::shared_ptr<Evts::EventGreen> event = std::make_shared<Evts::EventGreen>();
     event->data.emplace_back(7);
     event->data.emplace_back(8);
     event->data.emplace_back(9);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     m_actor->m_signal(event);
 }
 void State3::process_event(IEvent_ptr event)
 {
-    LOG_MAIN << "Method called: " << __PRETTY_FUNCTION__ << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
 
     std::size_t event_type = event->getTypeHash();
 
@@ -723,29 +728,55 @@ void State3::process_event(IEvent_ptr event)
 /* clang-format on */
 }  // namespace Bar
 
+namespace Demo
+{
+class App
+{
+   public:
+    App() : m_foo{std::make_shared<Foo::ActorFoo>()}, m_bar{std::make_shared<Bar::ActorBar>()}
+    {
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+        m_foo->connect_callbacks(
+            boost::bind(&Bar::ActorBar::callback_IEvent, m_bar.get(), boost::placeholders::_1));
+        m_bar->connect_callbacks(
+            boost::bind(&Foo::ActorFoo::callback_IEvent, m_foo.get(), boost::placeholders::_1));
+    }
+    ~App()
+    {
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+        stop();
+    }
+    void start()
+    {
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+        m_foo->start();
+        std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
+        m_bar->start();
+    }
+    void stop()
+    {
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+        m_foo->stop();
+        std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
+        m_bar->stop();
+    }
+
+   private:
+    std::shared_ptr<Foo::ActorFoo> m_foo;
+    std::shared_ptr<Bar::ActorBar> m_bar;
+};
+}  // namespace Demo
+
+
 /* ============================================================================================== */
 
 int main(int argc, char** argv)
 {
-    /* Binds the SIGINT signal to my custom handler */
-    signal(SIGINT, sigint_handler);
-    LOG_MAIN << "Starting DEMO" << std::endl;
+    Demo::App application;
+    application.start();
 
-    std::shared_ptr<Foo::ActorFoo> act_foo = std::make_shared<Foo::ActorFoo>();
-    std::shared_ptr<Bar::ActorBar> act_bar = std::make_shared<Bar::ActorBar>();
+    for (uint8_t i = 0; i < 15; i++)
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    act_foo->connect_callback_for_signal_emited_from_A(
-        boost::bind(&Bar::ActorBar::callback_IEvent, act_bar.get(), boost::placeholders::_1));
-    act_bar->connect_callback_for_signal_emited_from_B(
-        boost::bind(&Foo::ActorFoo::callback_IEvent, act_foo.get(), boost::placeholders::_1));
-
-    act_foo->start();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    act_bar->start();
-
-    for (uint8_t i = 0; i < 50; i++)
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    act_foo->stop();
-    act_bar->stop();
+    application.stop();
 }

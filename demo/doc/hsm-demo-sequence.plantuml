@@ -1,5 +1,5 @@
-@startuml transition
-title Hierarchical State Machine Sequence (hsm-sequence)
+@startuml hsm-demo-sequence
+title Hierarchical State Machine Demonstration \n(hsm-demo-sequence)
 participant ActorFoo as Foo #orange
 participant ActorBar as Bar #pink
 
@@ -12,7 +12,7 @@ Bar-->Bar: State1::on_entry()
 deactivate Bar
 
 Bar-->Bar: State1::process_event()
-note over Bar: Transition: State1 -> State2
+note over Bar: Transition:\nState1 -> State2
 Bar-->Bar: State1::on_exit()
 Bar-->Bar: State2::on_entry()
 activate Bar
@@ -20,7 +20,7 @@ Bar-[#green]>Foo : Event_Green [1 2 3]
 deactivate Bar
 
 Foo-->Foo: StateA::process_event()
-note over Foo: Transition: StateA -> StateG
+note over Foo: Transition:\nStateA -> StateG
 Foo-->Foo: StateD::on_entry()
 Foo-->Foo: StateF::on_entry()
 Foo-->Foo: StateG::on_entry()
@@ -29,7 +29,7 @@ Foo-[#blue]>Bar : Event_Blue [22]
 deactivate Foo
 
 Bar-->Bar: State2::process_event()
-note over Bar: Transition: State2 -> State3
+note over Bar: Transition:\nState2 -> State3
 Bar-->Bar: State2::on_exit()
 'emmits event already
 Bar-->Bar: State1::on_entry()
@@ -39,7 +39,7 @@ Bar-[#green]>Foo : Event_Green [4 5 6]
 deactivate Bar
 
 Foo-->Foo: StateG::process_event()
-note over Foo: Transition: StateG -> StateE
+note over Foo: Transition:\nStateG -> StateE
 Foo-->Foo: StateG::on_exit()
 Foo-->Foo: StateF::on_exit()
 Foo-->Foo: StateD::on_exit()
@@ -51,14 +51,14 @@ Foo-[#blue]>Bar : Event_Blue [33]
 deactivate Foo
 
 Bar-->Bar: State3::process_event()
-note over Bar: Transition: State3 -> State1
+note over Bar: Transition:\nState3 -> State1
 Bar-->Bar: State3::on_exit()
 activate Bar
 Bar-[#green]>Foo : Event_Green [7 8 9]
 deactivate Bar
 
 Foo-->Foo: StateE::process_event()
-note over Foo: Transition: StateE -> StateA
+note over Foo: Transition:\nStateE -> StateA
 Foo-->Foo: StateE::on_exit()
 Foo-->Foo: StateB::on_exit()
 Foo-->Foo: StateA::on_entry()

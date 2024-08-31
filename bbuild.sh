@@ -107,7 +107,6 @@ function func_build()
 
     cmake -S . -B build -D TARGET_GROUP=$1
     cmake --build build --parallel `nproc`
-
 }
 
 ################################################################################

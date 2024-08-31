@@ -1,1 +1,0 @@
-add_library(DemoObjects DemoObjects.cpp DemoObjects.hpp)
