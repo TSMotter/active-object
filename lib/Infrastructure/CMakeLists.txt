@@ -1,4 +1,4 @@
-add_subdirectory(Logger)
 add_subdirectory(IEvent)
+add_subdirectory(Logger)
 add_subdirectory(StateManager)
 add_subdirectory(ThreadSafeQueue)

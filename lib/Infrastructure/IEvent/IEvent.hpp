@@ -1,5 +1,5 @@
-#ifndef __EVENT_H_
-#define __EVENT_H_
+#ifndef __IEVENT_H_
+#define __IEVENT_H_
 
 #include <vector>
 #include <memory>
