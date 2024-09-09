@@ -1,25 +1,34 @@
 # Active Objects and Hierarchical State Machines (HSM)
 
-- This repository show a C++ implementation of the Active Objects (Actors) pattern as is described in the book "Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems - Miro Samek".
+- This repository contains an approach of a C++ implementation of the Active Objects (Actors) pattern as is described in the book "Practical UML Statecharts in C/C++: Event-Driven Programming for Embedded Systems - Miro Samek".
 
 - In this pattern, Active Objects (Actors) are event-driven, strictly encapsulated software objects running in their own threads of control that communicate with one another asynchronously exclusively by exchanging events.
 
 - Each Actor object implements a Hierarchical State Machines (HSM)
 
-- The intention here is to create an open source active object infrastructure that can be easily integrated into a C++ project
+- The intention here is to create an open source active object platform that can be easily integrated into a C++ project
 
-- There is a demonstration code example in `demo` folder that contains a working example and documentation about it can be found in [demo/doc/demo-doc.md](demo/doc/demo-doc.md)
+- There is a demonstration code example in `demo` folder that contains a working example and documentation about it can be found in [demo/doc/demo-doc.md](/demo/doc/demo-doc.md)
 
 ## Roadmap
 
-- I envision these to be some of the next steps for this project (in no particular order):
+- This is working simple implementation but I envision these to be some of the next steps for this project (in no particular order):
 
 1. Implement transition actions
+1. More unit tests (specially for `StateManager` class)
+1. Add SFINAE for `StateManager`
+1. Implement `IState` class that will define an interface for states
+1. Currently, there are usages of raw pointers in the `State` classes, I believe that this could be improved
 1. Superstates to be able to handle events that are unhandled by child states
-1. Create another common level of abstraction that will define an "Actor" object, which is composed of a HSM, event queue, thread and common interface methods like `start`, `stop`, etc
+1. Create another common level of abstraction that will define an "active object" object, which is composed of all the common components:
+    - HSM, event queue, thread and common interface methods like `start`, `stop`, etc
 1. Improve "shutdown" of an object to properly stop it's thread
-1. Way to describe HSM in a structured language (json? xml? GUI?) and run a python script that would generate the source code of the boiler plate
-1. Improve CMake structure to allow compiling this platform into a shared object (.so file) to allow dynamic link
+1. Currently, there is no block-less way of sleeping an object.
+    - Implement a centralized infrastructure for timers that might have it's own thread of execution and that can exchange events with the objects rather than having the objects call `std::this_thread::sleep_for()` within their own threads
+    - Idea is to use boost's `asio::io_service` and `asio::deadline_timer`
+1. Improve user experience:
+    - Way to describe HSM in a structured language (json? xml? GUI?) and run a python script that would generate the boiler plate code
+1. Improve CMake structure to allow compiling this platform into a shared object (.so file) and installing it in a system
 
 ## How to operate the repository
 
