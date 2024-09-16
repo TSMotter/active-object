@@ -2,7 +2,7 @@
 #define __STATEMANAGER_H_
 
 #include "tree/tree.h"
-#include "IEvent.hpp"
+#include "IEvent/IEvent.hpp"
 
 template <typename T>
 class StateManager
