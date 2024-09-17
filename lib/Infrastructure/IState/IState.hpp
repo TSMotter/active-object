@@ -2,8 +2,6 @@
 #define __ISTATE_H_
 
 #include "IEvent/IEvent.hpp"
-#include "Logger/Logger.hpp"
-
 
 template <class Actor>
 class IState
