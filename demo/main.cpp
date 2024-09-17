@@ -12,6 +12,7 @@
 
 #include "Logger/Logger.hpp"
 #include "ThreadSafeQueue/ThreadSafeQueue.hpp"
+#include "IState/IState.hpp"
 #include "StateManager/StateManager.hpp"
 
 #define LOG_MAIN (LOG("main.cpp", LEVEL_INFO))
@@ -32,7 +33,7 @@ class EventGreen : public IEvent
    public:
     std::vector<int> data;
 };
-class Shutdown : public IEvent
+class EventShutdown : public IEvent
 {
 };
 
@@ -50,150 +51,111 @@ enum class StateValue
     STATE_B, STATE_C, STATE_D,
     STATE_E, STATE_F, STATE_G,
 };
-const std::string& stringify(StateValue state)
-{
-    static const std::string unknown_state_event = "invalid stringify StateValue";
-    static const std::map<int, std::string> stringifier_container = {
-        {static_cast<int>(StateValue::UNKNOWN), "StateValue::UNKNOWN"},
-        {static_cast<int>(StateValue::ROOT), "StateValue::ROOT"},
-        {static_cast<int>(StateValue::STATE_A), "StateValue::STATE_A"},
-        {static_cast<int>(StateValue::STATE_B), "StateValue::STATE_B"},
-        {static_cast<int>(StateValue::STATE_C), "StateValue::STATE_C"},
-        {static_cast<int>(StateValue::STATE_D), "StateValue::STATE_D"},
-        {static_cast<int>(StateValue::STATE_E), "StateValue::STATE_E"},
-        {static_cast<int>(StateValue::STATE_F), "StateValue::STATE_F"},
-        {static_cast<int>(StateValue::STATE_G), "StateValue::STATE_G"}
-    };
-    auto it = stringifier_container.find(static_cast<int>(state));
-    if (it != stringifier_container.end())
-    {
-        return it->second;
-    }
-    return unknown_state_event;
-}
 
 class ActorFoo;
 
-class ActorFooSuperState
+class ActorFooSuperState : public IState<ActorFoo>
 {
    public:
-    ActorFooSuperState(ActorFoo* actor, StateValue state = StateValue::ROOT)
-        : m_actor{actor}, m_state_enum{state}
+    virtual ~ActorFooSuperState() = default;
+    ActorFooSuperState(ActorFoo* act) : IState<ActorFoo>(act)
     {
     }
-    virtual ~ActorFooSuperState(){}
-    virtual void on_entry(){}
-    virtual void on_exit(){}
 
-    virtual void unhandled_event(IEvent_ptr event)
-    {
-        (void) event;
-        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
-    }
-
-    virtual void process_event(IEvent_ptr event)
-    {
-        (void) event;
-        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
-    }
-
-    virtual StateValue type() const { return m_state_enum; }
-   protected:
-    ActorFoo* m_actor;
-
-   private:
-    StateValue m_state_enum;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class StateA : public ActorFooSuperState
 {
    public:
     virtual ~StateA() = default;
-    StateA(ActorFoo* actor, StateValue state = StateValue::STATE_A)
-        : ActorFooSuperState(actor, state)
+    StateA(ActorFoo* actor)
+        : ActorFooSuperState(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class StateC : public StateA
 {
    public:
     virtual ~StateC() = default;
-    StateC(ActorFoo* actor, StateValue state = StateValue::STATE_C)
-        : StateA(actor, state)
+    StateC(ActorFoo* actor)
+        : StateA(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class StateD : public StateA
 {
    public:
     virtual ~StateD() = default;
-    StateD(ActorFoo* actor, StateValue state = StateValue::STATE_D)
-        : StateA(actor, state)
+    StateD(ActorFoo* actor)
+        : StateA(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class StateF : public StateD
 {
    public:
     virtual ~StateF() = default;
-    StateF(ActorFoo* actor, StateValue state = StateValue::STATE_F)
-        : StateD(actor, state)
+    StateF(ActorFoo* actor)
+        : StateD(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class StateG : public StateF
 {
    public:
     virtual ~StateG() = default;
-    StateG(ActorFoo* actor, StateValue state = StateValue::STATE_G)
-        : StateF(actor, state)
+    StateG(ActorFoo* actor)
+        : StateF(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class StateB : public ActorFooSuperState
 {
    public:
     virtual ~StateB() = default;
-    StateB(ActorFoo* actor, StateValue state = StateValue::STATE_B)
-        : ActorFooSuperState(actor, state)
+    StateB(ActorFoo* actor)
+        : ActorFooSuperState(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class StateE : public StateB
 {
    public:
     virtual ~StateE() = default;
-    StateE(ActorFoo* actor, StateValue state = StateValue::STATE_E)
-        : StateB(actor, state)
+    StateE(ActorFoo* actor)
+        : StateB(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 /* clang-format on */
@@ -207,13 +169,13 @@ class ActorFoo
         tree<ActorFooSuperState_ptr> tree;
         tree.set_head(std::make_shared<ActorFooSuperState>(this));
         m_states[StateValue::ROOT] = tree.begin();
-        m_states[StateValue::STATE_A] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<StateA>(this, StateValue::STATE_A));
-        m_states[StateValue::STATE_C] = tree.append_child(m_states[StateValue::STATE_A], std::make_shared<StateC>(this, StateValue::STATE_C));
-        m_states[StateValue::STATE_D] = tree.append_child(m_states[StateValue::STATE_A], std::make_shared<StateD>(this, StateValue::STATE_D));
-        m_states[StateValue::STATE_F] = tree.append_child(m_states[StateValue::STATE_D], std::make_shared<StateF>(this, StateValue::STATE_F));
-        m_states[StateValue::STATE_G] = tree.append_child(m_states[StateValue::STATE_F], std::make_shared<StateG>(this, StateValue::STATE_G));
-        m_states[StateValue::STATE_B] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<StateB>(this, StateValue::STATE_B));
-        m_states[StateValue::STATE_E] = tree.append_child(m_states[StateValue::STATE_B], std::make_shared<StateE>(this, StateValue::STATE_E));
+        m_states[StateValue::STATE_A] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<StateA>(this));
+        m_states[StateValue::STATE_C] = tree.append_child(m_states[StateValue::STATE_A], std::make_shared<StateC>(this));
+        m_states[StateValue::STATE_D] = tree.append_child(m_states[StateValue::STATE_A], std::make_shared<StateD>(this));
+        m_states[StateValue::STATE_F] = tree.append_child(m_states[StateValue::STATE_D], std::make_shared<StateF>(this));
+        m_states[StateValue::STATE_G] = tree.append_child(m_states[StateValue::STATE_F], std::make_shared<StateG>(this));
+        m_states[StateValue::STATE_B] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<StateB>(this));
+        m_states[StateValue::STATE_E] = tree.append_child(m_states[StateValue::STATE_B], std::make_shared<StateE>(this));
         m_states[StateValue::UNKNOWN] = tree.end();
 
         m_next_state = m_states[StateValue::UNKNOWN];
@@ -284,7 +246,15 @@ class ActorFoo
 };
 
 /* clang-format off */
-void StateA::on_entry()
+int ActorFooSuperState::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int ActorFooSuperState::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int ActorFooSuperState::process_event(IEvent_ptr event)
+{
+    (void) event;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    return 0;
+}
+int StateA::on_entry()
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -292,8 +262,9 @@ void StateA::on_entry()
     std::shared_ptr<Evts::EventBlue> event = std::make_shared<Evts::EventBlue>();
     event->timeout                       = 11;
     m_actor->m_signal(event);
+    return 0;
 }
-void StateA::process_event(IEvent_ptr event)
+int StateA::process_event(IEvent_ptr event)
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -313,41 +284,47 @@ void StateA::process_event(IEvent_ptr event)
                 logStream << k << " ";
             }
             LOG_MAIN << logStream.str() << std::endl;
+            m_actor->m_next_state = m_actor->m_states[StateValue::STATE_G];
+            return 0;
         }
         else
         {
             LOG_MAIN << "Downcasting failed." << std::endl;
         }
-        m_actor->m_next_state = m_actor->m_states[StateValue::STATE_G];
     }
-    else
+    else if (event_type == typeid(Evts::EventBlue).hash_code())
     {
-
+        // Do stuff
+        return 0;
     }
+    return -1;  // Unhandled event
 }
-void StateA::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateC::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateC::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateC::process_event(IEvent_ptr event)
+int StateA::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateC::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateC::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateC::process_event(IEvent_ptr event)
 {
     (void) event;
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    return 0;
 }
-void StateD::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateD::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateD::process_event(IEvent_ptr event)
+int StateD::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateD::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateD::process_event(IEvent_ptr event)
 {
     (void) event;
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    return 0;
 }
-void StateF::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateF::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateF::process_event(IEvent_ptr event)
+int StateF::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateF::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateF::process_event(IEvent_ptr event)
 {
     (void) event;
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    return 0;
 }
-void StateG::on_entry()
+int StateG::on_entry()
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -355,9 +332,10 @@ void StateG::on_entry()
     std::shared_ptr<Evts::EventBlue> event = std::make_shared<Evts::EventBlue>();
     event->timeout                       = 22;
     m_actor->m_signal(event);
+    return 0;
 }
-void StateG::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateG::process_event(IEvent_ptr event)
+int StateG::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateG::process_event(IEvent_ptr event)
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -377,25 +355,25 @@ void StateG::process_event(IEvent_ptr event)
                 logStream << k << " ";
             }
             LOG_MAIN << logStream.str() << std::endl;
+            m_actor->m_next_state = m_actor->m_states[StateValue::STATE_E];
+            return 0;
         }
         else
         {
             LOG_MAIN << "Downcasting failed." << std::endl;
         }
-        m_actor->m_next_state = m_actor->m_states[StateValue::STATE_E];
     }
+    return -1;  // Unhandled event
 }
-void StateB::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateB::on_exit()
-{
-    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
-}
-void StateB::process_event(IEvent_ptr event)
+int StateB::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int StateB::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int StateB::process_event(IEvent_ptr event)
 {
     (void) event;
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    return 0;
 }
-void StateE::on_entry()
+int StateE::on_entry()
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -403,9 +381,10 @@ void StateE::on_entry()
     std::shared_ptr<Evts::EventBlue> event = std::make_shared<Evts::EventBlue>();
     event->timeout                       = 33;
     m_actor->m_signal(event);
+    return 0;
 }
-void StateE::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void StateE::process_event(IEvent_ptr event)
+int StateE::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int StateE::process_event(IEvent_ptr event)
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -425,13 +404,15 @@ void StateE::process_event(IEvent_ptr event)
                 logStream << k << " ";
             }
             LOG_MAIN << logStream.str() << std::endl;
+            m_actor->m_next_state = m_actor->m_states[StateValue::STATE_A];
+            return 0;
         }
         else
         {
             LOG_MAIN << "Downcasting failed." << std::endl;
         }
-        m_actor->m_next_state = m_actor->m_states[StateValue::STATE_A];
     }
+    return -1;  // Unhandled event
 }
 
 /* clang-format on */
@@ -447,94 +428,59 @@ enum class StateValue
     UNKNOWN = 0, ROOT, STATE_1,
     STATE_2, STATE_3
 };
-const std::string& stringify(StateValue state)
-{
-    static const std::string unknown_state_event = "invalid stringify StateValue";
-    static const std::map<int, std::string> stringifier_container = {
-        {static_cast<int>(StateValue::UNKNOWN), "StateValue::UNKNOWN"},
-        {static_cast<int>(StateValue::ROOT), "StateValue::ROOT"},
-        {static_cast<int>(StateValue::STATE_1), "StateValue::STATE_1"},
-        {static_cast<int>(StateValue::STATE_2), "StateValue::STATE_2"},
-        {static_cast<int>(StateValue::STATE_3), "StateValue::STATE_3"},
-    };
-    auto it = stringifier_container.find(static_cast<int>(state));
-    if (it != stringifier_container.end())
-    {
-        return it->second;
-    }
-    return unknown_state_event;
-}
 
 class ActorBar;
 
-class ActorBarSuperState
+class ActorBarSuperState : public IState<ActorBar>
 {
    public:
-    ActorBarSuperState(ActorBar* actor, StateValue state = StateValue::ROOT)
-        : m_actor{actor}, m_state_enum{state}
+    virtual ~ActorBarSuperState() = default;
+    ActorBarSuperState(ActorBar* act) : IState<ActorBar>(act)
     {
     }
-    virtual ~ActorBarSuperState(){}
-    virtual void on_entry(){}
-    virtual void on_exit(){}
 
-    virtual void unhandled_event(IEvent_ptr event)
-    {
-        (void) event;
-        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
-    }
-
-    virtual void process_event(IEvent_ptr event)
-    {
-        (void) event;
-        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
-    }
-
-    virtual StateValue type() const { return m_state_enum; }
-   protected:
-    ActorBar* m_actor;
-
-   private:
-    StateValue m_state_enum;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class State1 : public ActorBarSuperState
 {
    public:
     virtual ~State1() = default;
-    State1(ActorBar* actor, StateValue state = StateValue::STATE_1)
-        : ActorBarSuperState(actor, state)
+    State1(ActorBar* actor)
+        : ActorBarSuperState(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class State3 : public State1
 {
    public:
     virtual ~State3() = default;
-    State3(ActorBar* actor, StateValue state = StateValue::STATE_3)
-        : State1(actor, state)
+    State3(ActorBar* actor)
+        : State1(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 class State2 : public ActorBarSuperState
 {
    public:
     virtual ~State2() = default;
-    State2(ActorBar* actor, StateValue state = StateValue::STATE_2)
-        : ActorBarSuperState(actor, state)
+    State2(ActorBar* actor)
+        : ActorBarSuperState(actor)
     {
     }
-    virtual void on_entry() override;
-    virtual void on_exit() override;
-    virtual void process_event(IEvent_ptr event) override;
+    virtual int on_entry() override;
+    virtual int on_exit() override;
+    virtual int process_event(IEvent_ptr event) override;
 };
 
 
@@ -549,9 +495,9 @@ class ActorBar
         tree<ActorBarSuperState_ptr> tree;
         tree.set_head(std::make_shared<ActorBarSuperState>(this));
         m_states[StateValue::ROOT] = tree.begin();
-        m_states[StateValue::STATE_1] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<State1>(this, StateValue::STATE_1));
-        m_states[StateValue::STATE_2] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<State2>(this, StateValue::STATE_2));
-        m_states[StateValue::STATE_3] = tree.append_child(m_states[StateValue::STATE_1], std::make_shared<State3>(this, StateValue::STATE_3));
+        m_states[StateValue::STATE_1] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<State1>(this));
+        m_states[StateValue::STATE_2] = tree.append_child(m_states[StateValue::ROOT], std::make_shared<State2>(this));
+        m_states[StateValue::STATE_3] = tree.append_child(m_states[StateValue::STATE_1], std::make_shared<State3>(this));
         m_states[StateValue::UNKNOWN] = tree.end();
 
         m_next_state = m_states[StateValue::UNKNOWN];
@@ -623,9 +569,17 @@ class ActorBar
 };
 
 /* clang-format off */
-void State1::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void State1::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void State1::process_event(IEvent_ptr event)
+int ActorBarSuperState::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int ActorBarSuperState::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int ActorBarSuperState::process_event(IEvent_ptr event)
+{
+    (void) event;
+    LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    return 0;
+}
+int State1::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int State1::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int State1::process_event(IEvent_ptr event)
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -639,15 +593,17 @@ void State1::process_event(IEvent_ptr event)
         if (event_blue)
         {
             LOG_MAIN << "This is the event data: " << event_blue->timeout << std::endl;
+            m_actor->m_next_state = m_actor->m_states[StateValue::STATE_2];
+            return 0;
         }
         else
         {
             LOG_MAIN << "Downcasting failed." << std::endl;
         }
-        m_actor->m_next_state = m_actor->m_states[StateValue::STATE_2];
     }
+    return -1;  // Unhandled event
 }
-void State2::on_entry()
+int State2::on_entry()
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -657,9 +613,10 @@ void State2::on_entry()
     event->data.emplace_back(2);
     event->data.emplace_back(3);
     m_actor->m_signal(event);
+    return 0;
 }
-void State2::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; }
-void State2::process_event(IEvent_ptr event)
+int State2::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int State2::process_event(IEvent_ptr event)
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -673,15 +630,17 @@ void State2::process_event(IEvent_ptr event)
         if (event_blue)
         {
             LOG_MAIN << "This is the event data: " << event_blue->timeout << std::endl;
+            m_actor->m_next_state = m_actor->m_states[StateValue::STATE_3];
+            return 0;
         }
         else
         {
             LOG_MAIN << "Downcasting failed." << std::endl;
         }
-        m_actor->m_next_state = m_actor->m_states[StateValue::STATE_3];
     }
+    return -1;  // Unhandled event
 }
-void State3::on_entry()
+int State3::on_entry()
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -691,8 +650,9 @@ void State3::on_entry()
     event->data.emplace_back(5);
     event->data.emplace_back(6);
     m_actor->m_signal(event);
+    return 0;
 }
-void State3::on_exit()
+int State3::on_exit()
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -702,8 +662,9 @@ void State3::on_exit()
     event->data.emplace_back(8);
     event->data.emplace_back(9);
     m_actor->m_signal(event);
+    return 0;
 }
-void State3::process_event(IEvent_ptr event)
+int State3::process_event(IEvent_ptr event)
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
@@ -717,13 +678,15 @@ void State3::process_event(IEvent_ptr event)
         if (event_blue)
         {
             LOG_MAIN << "This is the event data: " << event_blue->timeout << std::endl;
+            m_actor->m_next_state = m_actor->m_states[StateValue::STATE_1];
+            return 0;
         }
         else
         {
             LOG_MAIN << "Downcasting failed." << std::endl;
         }
-        m_actor->m_next_state = m_actor->m_states[StateValue::STATE_1];
     }
+    return -1;  // Unhandled event
 }
 /* clang-format on */
 }  // namespace Bar

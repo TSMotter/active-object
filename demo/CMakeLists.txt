@@ -5,6 +5,6 @@ add_executable(main main.cpp)
 target_include_directories(main PUBLIC ${CMAKE_SOURCE_DIR}/lib/Infrastructure)
 
 # Link library to a binary target
-target_link_libraries(main PUBLIC Logger)
-target_link_libraries(main PUBLIC ThreadSafeQueue)
+target_link_libraries(main PUBLIC IState)
 target_link_libraries(main PUBLIC StateManager)
+target_link_libraries(main PUBLIC ThreadSafeQueue)
