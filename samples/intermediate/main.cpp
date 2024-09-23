@@ -18,8 +18,6 @@
 #define LOG_MAIN (LOG("main.cpp", LEVEL_INFO))
 #define DELAY 200
 
-using connection = boost::signals2::connection;
-
 namespace Evts
 {
 
@@ -690,6 +688,8 @@ int State3::process_event(IEvent_ptr event)
 }
 /* clang-format on */
 }  // namespace Bar
+
+/* ============================================================================================== */
 
 namespace Demo
 {

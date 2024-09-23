@@ -8,7 +8,9 @@
 
 - The intention here is to create an open source active object platform that can be easily integrated into a C++ project
 
-- There is a demonstration code example in `demo` folder that contains a working example and documentation about it can be found in [demo/doc/demo-doc.md](/demo/doc/demo-doc.md)
+- There is a folder of sample code that contains different working examples..
+
+    - Each of which contains it's own documentation, for example: [samples/intermediate/readme.md](/samples/intermediate/readme.md)
 
 ## Roadmap
 
