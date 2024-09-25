@@ -26,5 +26,6 @@ class IEvent
 using IEvent_ptr      = std::shared_ptr<IEvent>;
 using SignatureIEvent = std::function<void(IEvent_ptr)>;
 using SignalIEvent    = boost::signals2::signal<void(IEvent_ptr)>;
+using connection      = boost::signals2::connection;
 
 #endif

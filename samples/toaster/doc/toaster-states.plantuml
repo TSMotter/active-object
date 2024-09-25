@@ -1,0 +1,11 @@
+@startmindmap toaster-states
+title Toaster States (toaster-states)
+
+*[#Red] ToasterSuperState
+** heating
+*** toasting
+*** baking
+
+** door_open
+
+@endmindmap

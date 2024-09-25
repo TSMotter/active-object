@@ -18,8 +18,6 @@
 #define LOG_MAIN (LOG("main.cpp", LEVEL_INFO))
 #define DELAY 200
 
-using connection = boost::signals2::connection;
-
 namespace Evts
 {
 
@@ -246,8 +244,8 @@ class ActorFoo
 };
 
 /* clang-format off */
-int ActorFooSuperState::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
-int ActorFooSuperState::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int ActorFooSuperState::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int ActorFooSuperState::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
 int ActorFooSuperState::process_event(IEvent_ptr event)
 {
     (void) event;
@@ -299,25 +297,25 @@ int StateA::process_event(IEvent_ptr event)
     }
     return -1;  // Unhandled event
 }
-int StateA::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
-int StateC::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
-int StateC::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateA::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int StateC::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int StateC::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
 int StateC::process_event(IEvent_ptr event)
 {
     (void) event;
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     return 0;
 }
-int StateD::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
-int StateD::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateD::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int StateD::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
 int StateD::process_event(IEvent_ptr event)
 {
     (void) event;
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     return 0;
 }
-int StateF::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
-int StateF::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateF::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int StateF::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
 int StateF::process_event(IEvent_ptr event)
 {
     (void) event;
@@ -334,7 +332,7 @@ int StateG::on_entry()
     m_actor->m_signal(event);
     return 0;
 }
-int StateG::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int StateG::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
 int StateG::process_event(IEvent_ptr event)
 {
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
@@ -569,8 +567,8 @@ class ActorBar
 };
 
 /* clang-format off */
-int ActorBarSuperState::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
-int ActorBarSuperState::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; return 0; }
+int ActorBarSuperState::on_entry() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
+int ActorBarSuperState::on_exit() { LOG_MAIN << __PRETTY_FUNCTION__ << std::endl; return 0; }
 int ActorBarSuperState::process_event(IEvent_ptr event)
 {
     (void) event;
@@ -690,6 +688,8 @@ int State3::process_event(IEvent_ptr event)
 }
 /* clang-format on */
 }  // namespace Bar
+
+/* ============================================================================================== */
 
 namespace Demo
 {
