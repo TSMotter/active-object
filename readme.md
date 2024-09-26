@@ -19,11 +19,10 @@
 1. Implement transition actions
 1. More unit tests (specially for `StateManager` class)
 1. Add SFINAE for `StateManager`
-1. Implement `IState` class that will define an interface for states
 1. Currently, there are usages of raw pointers in the `State` classes, I believe that this could be improved
-1. Superstates to be able to handle events that are unhandled by child states
 1. Create another common level of abstraction that will define an "active object" object, which is composed of all the common components:
     - HSM, event queue, thread and common interface methods like `start`, `stop`, etc
+    - Dependency injection
 1. Improve "shutdown" of an object to properly stop it's thread
 1. Currently, there is no block-less way of sleeping an object.
     - Implement a centralized infrastructure for timers that might have it's own thread of execution and that can exchange events with the objects rather than having the objects call `std::this_thread::sleep_for()` within their own threads
