@@ -376,12 +376,12 @@ int Baking::process_event(IEvent_ptr event)
 int main(int argc, char** argv)
 {
     std::vector<IEvent_ptr> events;
-    events.emplace_back(std::make_shared<Evts::DoorOpen>()); // 0
-    events.emplace_back(std::make_shared<Evts::DoorClose>()); // 1
-    events.emplace_back(std::make_shared<Evts::DoToasting>()); // 2
-    events.emplace_back(std::make_shared<Evts::DoBaking>()); // 3
-    events.emplace_back(std::make_shared<Evts::Timeout>()); // 4
-    events.emplace_back(std::make_shared<Evts::Shutdown>()); // 5
+    events.emplace_back(std::make_shared<Evts::DoorOpen>());    // 0
+    events.emplace_back(std::make_shared<Evts::DoorClose>());   // 1
+    events.emplace_back(std::make_shared<Evts::DoToasting>());  // 2
+    events.emplace_back(std::make_shared<Evts::DoBaking>());    // 3
+    events.emplace_back(std::make_shared<Evts::Timeout>());     // 4
+    events.emplace_back(std::make_shared<Evts::Shutdown>());    // 5
 
     std::shared_ptr<Toaster::Toaster> tst = std::make_shared<Toaster::Toaster>();
     // tst->connect_callbacks();
