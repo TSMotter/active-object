@@ -365,6 +365,38 @@ int Baking::process_event(IEvent_ptr event)
     LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
     return 0;
 }
+
+class ITransitionAction
+{
+   public:
+    ITransitionAction()
+    {
+    }
+    ~ITransitionAction() = default;
+
+    virtual void operator()(){};
+};
+
+class NullTransitionAction : public ITransitionAction
+{
+   public:
+    NullTransitionAction()
+    {
+    }
+    ~NullTransitionAction() = default;
+    virtual void operator()() override
+    {
+        LOG_MAIN << __PRETTY_FUNCTION__ << std::endl;
+    };
+};
+
+struct TransitionDefinition
+{
+    IEvent                                m_event;
+    ITransitionAction                     m_action;
+    tree<ToasterSuperState_ptr>::iterator m_next_state;
+};
+using TransitionTable = std::vector<TransitionDefinition>;
 }  // namespace Toaster
 
 /* ============================================================================================== */
@@ -393,6 +425,19 @@ int main(int argc, char** argv)
         state_map[Toaster::StateValue::BAKING]    = state_tree.append_child(state_map[Toaster::StateValue::HEATING], std::make_shared<Toaster::Baking>(tst.get()));
         tst->init(std::move(state_map), std::move(state_tree), state_map[Toaster::StateValue::HEATING]);
         /* clang-format on */
+
+        /* mocking what a transition table would look like for the 'Heating' state */
+        Toaster::TransitionTable transition_table_heating = {
+            {.m_event      = Evts::DoorOpen(),
+             .m_action     = Toaster::NullTransitionAction(),
+             .m_next_state = state_map[Toaster::StateValue::DOOR_OPEN]},
+            {.m_event      = Evts::DoToasting(),
+             .m_action     = Toaster::NullTransitionAction(),
+             .m_next_state = state_map[Toaster::StateValue::TOASTING]},
+            {.m_event      = Evts::DoBaking(),
+             .m_action     = Toaster::NullTransitionAction(),
+             .m_next_state = state_map[Toaster::StateValue::BAKING]},
+        };
     }
 
     // tst->connect_callbacks();
