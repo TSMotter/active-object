@@ -140,9 +140,9 @@ class Toaster
             tree.append_child(m_states[StateValue::HEATING], std::make_shared<Toasting>(this));
         m_states[StateValue::BAKING] =
             tree.append_child(m_states[StateValue::HEATING], std::make_shared<Baking>(this));
-        m_states[StateValue::UNKNOWN] = tree.end();
 
-        m_next_state = m_states[StateValue::UNKNOWN];
+        m_unknown_state = tree.end();
+        m_next_state    = m_unknown_state;
 
         m_state_manager = std::make_shared<StateManager<ToasterSuperState_ptr>>(
             std::move(tree), m_states[StateValue::HEATING]);
@@ -230,6 +230,7 @@ class Toaster
     std::shared_ptr<StateManager<ToasterSuperState_ptr>>        m_state_manager;
     std::map<StateValue, tree<ToasterSuperState_ptr>::iterator> m_states;
     tree<ToasterSuperState_ptr>::iterator                       m_next_state;
+    tree<ToasterSuperState_ptr>::iterator                       m_unknown_state;
 
    private:
     void run()
@@ -239,10 +240,10 @@ class Toaster
             IEvent_ptr current_event = m_queue->wait_and_pop();
             m_state_manager->processEvent(current_event);
 
-            if (m_next_state != m_states[StateValue::UNKNOWN])
+            if (m_next_state != m_unknown_state)
             {
                 m_state_manager->transitionTo(m_next_state);
-                m_next_state = m_states[StateValue::UNKNOWN];
+                m_next_state = m_unknown_state;
             }
 
         } while (m_running);
