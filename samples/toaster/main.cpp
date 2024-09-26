@@ -129,26 +129,21 @@ class Toaster
    public:
     Toaster() : m_queue{std::make_shared<SimplestThreadSafeQueue<IEvent_ptr>>()}
     {
-        tree<ToasterSuperState_ptr> tree;
-        tree.set_head(std::make_shared<ToasterSuperState>(this));
-        m_states[StateValue::ROOT] = tree.begin();
-        m_states[StateValue::HEATING] =
-            tree.append_child(m_states[StateValue::ROOT], std::make_shared<Heating>(this));
-        m_states[StateValue::DOOR_OPEN] =
-            tree.append_child(m_states[StateValue::ROOT], std::make_shared<DoorOpen>(this));
-        m_states[StateValue::TOASTING] =
-            tree.append_child(m_states[StateValue::HEATING], std::make_shared<Toasting>(this));
-        m_states[StateValue::BAKING] =
-            tree.append_child(m_states[StateValue::HEATING], std::make_shared<Baking>(this));
-
-        m_unknown_state = tree.end();
-        m_next_state    = m_unknown_state;
-
-        m_state_manager = std::make_shared<StateManager<ToasterSuperState_ptr>>(
-            std::move(tree), m_states[StateValue::HEATING]);
     }
     ~Toaster()
     {
+    }
+
+    void init(std::map<StateValue, tree<ToasterSuperState_ptr>::iterator>&& map,
+              tree<ToasterSuperState_ptr>&&                                 hsm_tree,
+              tree<ToasterSuperState_ptr>::iterator&                        init_state)
+    {
+        m_states = std::move(map);
+
+        m_unknown_state = hsm_tree.end();
+        m_next_state    = m_unknown_state;
+        m_state_manager =
+            std::make_shared<StateManager<ToasterSuperState_ptr>>(std::move(hsm_tree), init_state);
     }
 
     void start()
@@ -385,6 +380,21 @@ int main(int argc, char** argv)
     events.emplace_back(std::make_shared<Evts::Shutdown>());    // 5
 
     std::shared_ptr<Toaster::Toaster> tst = std::make_shared<Toaster::Toaster>();
+
+    {
+        /* clang-format off */
+        tree<Toaster::ToasterSuperState_ptr>                                          state_tree;
+        std::map<Toaster::StateValue, tree<Toaster::ToasterSuperState_ptr>::iterator> state_map;
+        state_tree.set_head(std::make_shared<Toaster::ToasterSuperState>(tst.get()));
+        state_map[Toaster::StateValue::ROOT]      = state_tree.begin();
+        state_map[Toaster::StateValue::HEATING]   = state_tree.append_child(state_map[Toaster::StateValue::ROOT], std::make_shared<Toaster::Heating>(tst.get()));
+        state_map[Toaster::StateValue::DOOR_OPEN] = state_tree.append_child(state_map[Toaster::StateValue::ROOT], std::make_shared<Toaster::DoorOpen>(tst.get()));
+        state_map[Toaster::StateValue::TOASTING]  = state_tree.append_child(state_map[Toaster::StateValue::HEATING], std::make_shared<Toaster::Toasting>(tst.get()));
+        state_map[Toaster::StateValue::BAKING]    = state_tree.append_child(state_map[Toaster::StateValue::HEATING], std::make_shared<Toaster::Baking>(tst.get()));
+        tst->init(std::move(state_map), std::move(state_tree), state_map[Toaster::StateValue::HEATING]);
+        /* clang-format on */
+    }
+
     // tst->connect_callbacks();
     // tst->start();
     tst->m_state_manager->init();
