@@ -77,6 +77,8 @@ class ToasterSuperState : public IState<Toaster>
     virtual int process_event(IEvent_ptr event) override;
 };
 
+using ToasterSuperState_ptr = std::shared_ptr<ToasterSuperState>;
+
 class Heating : public ToasterSuperState
 {
    public:
@@ -125,8 +127,6 @@ class Baking : public Heating
 class Toaster
 {
    public:
-    using ToasterSuperState_ptr = std::shared_ptr<ToasterSuperState>;
-
     Toaster() : m_queue{std::make_shared<SimplestThreadSafeQueue<IEvent_ptr>>()}
     {
         tree<ToasterSuperState_ptr> tree;
