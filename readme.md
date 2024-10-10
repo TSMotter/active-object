@@ -36,9 +36,10 @@
 - If you wish to use docker to operate the repository, build the image and launch it using the helper scripts inside of the `docker` folder
 - The repository can be operated outside of the docker container if all the dependencies are met
 - Once the environment is set (either inside or outside the container), the following commands can be issued:
+    - Where `<target>` is either `samples/xxx` or `test`
 
 ```bash
-cmake -S . -B build -D TARGET_GROUP=demo
+cmake -S . -B build -D TARGET_GROUP=<target>
 cmake --build build --parallel `nproc`
 ```
 
@@ -53,8 +54,6 @@ cmake --build build --parallel `nproc`
 ```bash
 ./bbuild.sh -s
 ```
-
-- In the following examples, `<target>` is either `demo` or `test`
 
 - To build:
 ```bash
@@ -77,7 +76,7 @@ cmake --build build --parallel `nproc`
 ```
 
 - Examples:
-    - `./bbuild.sh -v -f -s -r -e demo`
+    - `./bbuild.sh -v -f -s -r -e samples/toaster`
     - `./bbuild.sh -v -f -s -r -e test`
 
 - To check all options available::
