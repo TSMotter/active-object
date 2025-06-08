@@ -16,7 +16,6 @@
 
 namespace Evts
 {
-
 class DoorOpen : public IEvent
 {
 };
@@ -392,9 +391,9 @@ class NullTransitionAction : public ITransitionAction
 
 struct TransitionDefinition
 {
-    IEvent                                m_event;
-    ITransitionAction                     m_action;
-    tree<ToasterSuperState_ptr>::iterator m_next_state;
+    IEvent             m_event;
+    ITransitionAction  m_action;
+    StateValue         m_next_state;
 };
 using TransitionTable = std::vector<TransitionDefinition>;
 }  // namespace Toaster
@@ -414,6 +413,18 @@ int main(int argc, char** argv)
     std::shared_ptr<Toaster::Toaster> tst = std::make_shared<Toaster::Toaster>();
 
     {
+        /* mocking what a transition table would look like for the 'Heating' state */
+        Toaster::TransitionTable transition_table_heating = {
+            {.m_event      = Evts::DoorOpen(),
+             .m_action     = Toaster::NullTransitionAction(),
+             .m_next_state = Toaster::StateValue::DOOR_OPEN},
+            {.m_event      = Evts::DoToasting(),
+             .m_action     = Toaster::NullTransitionAction(),
+             .m_next_state = Toaster::StateValue::TOASTING},
+            {.m_event      = Evts::DoBaking(),
+             .m_action     = Toaster::NullTransitionAction(),
+             .m_next_state = Toaster::StateValue::BAKING},
+        };
         /* clang-format off */
         tree<Toaster::ToasterSuperState_ptr>                                          state_tree;
         std::map<Toaster::StateValue, tree<Toaster::ToasterSuperState_ptr>::iterator> state_map;
@@ -426,18 +437,6 @@ int main(int argc, char** argv)
         tst->init(std::move(state_map), std::move(state_tree), state_map[Toaster::StateValue::HEATING]);
         /* clang-format on */
 
-        /* mocking what a transition table would look like for the 'Heating' state */
-        Toaster::TransitionTable transition_table_heating = {
-            {.m_event      = Evts::DoorOpen(),
-             .m_action     = Toaster::NullTransitionAction(),
-             .m_next_state = state_map[Toaster::StateValue::DOOR_OPEN]},
-            {.m_event      = Evts::DoToasting(),
-             .m_action     = Toaster::NullTransitionAction(),
-             .m_next_state = state_map[Toaster::StateValue::TOASTING]},
-            {.m_event      = Evts::DoBaking(),
-             .m_action     = Toaster::NullTransitionAction(),
-             .m_next_state = state_map[Toaster::StateValue::BAKING]},
-        };
     }
 
     // tst->connect_callbacks();

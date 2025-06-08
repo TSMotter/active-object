@@ -60,12 +60,10 @@ class SimplestThreadSafeQueue : public IThreadSafeQueue<T>
     {
         std::unique_lock<std::mutex> lock(m_mutex);
         LOG_TSQ(LEVEL_DEBUG) << __PRETTY_FUNCTION__ << std::endl;
-        m_cv.wait(lock,
-                  [&]()
-                  {
-                      LOG_TSQ(LEVEL_DEBUG) << __PRETTY_FUNCTION__ << " - Wait" << std::endl;
-                      return !m_queue.empty();
-                  });
+        m_cv.wait(lock, [&]() {
+            LOG_TSQ(LEVEL_DEBUG) << __PRETTY_FUNCTION__ << " - Wait" << std::endl;
+            return !m_queue.empty();
+        });
         LOG_TSQ(LEVEL_DEBUG) << __PRETTY_FUNCTION__ << " - Finished waiting" << std::endl;
         T result = m_queue.front();
         m_queue.pop_front();
@@ -80,13 +78,10 @@ class SimplestThreadSafeQueue : public IThreadSafeQueue<T>
         std::unique_lock<std::mutex> lock(m_mutex);
         LOG_TSQ(LEVEL_DEBUG) << __PRETTY_FUNCTION__ << std::endl;
         /*  The return of wait_for is false if it returns and the predicate is still false */
-        if (m_cv.wait_for(lock, timeout,
-                          [&]()
-                          {
-                              LOG_TSQ(LEVEL_DEBUG)
-                                  << __PRETTY_FUNCTION__ << " - Waiting" << std::endl;
-                              return !m_queue.empty();
-                          }))
+        if (m_cv.wait_for(lock, timeout, [&]() {
+                LOG_TSQ(LEVEL_DEBUG) << __PRETTY_FUNCTION__ << " - Waiting" << std::endl;
+                return !m_queue.empty();
+            }))
         {
             LOG_TSQ(LEVEL_DEBUG) << __PRETTY_FUNCTION__ << " - Finished waiting" << std::endl;
             result = m_queue.front();

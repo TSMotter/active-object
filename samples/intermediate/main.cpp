@@ -20,7 +20,6 @@
 
 namespace Evts
 {
-
 class EventBlue : public IEvent
 {
    public:
